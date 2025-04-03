@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Emergency Data Recovery</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            line-height: 1.5;
+            padding: 2rem;
+            max-width: 800px;
+            margin: 0 auto;
+            color: #333;
+        }
+        h1 { color: #1a1a1a; }
+        .card {
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            background-color: #f9f9f9;
+        }
+        .warning {
+            background-color: #fff3cd;
+            border-color: #ffeeba;
+        }
+        .success {
+            background-color: #d4edda;
+            border-color: #c3e6cb;
+        }
+        button {
+            background-color: #4a6cf7;
+            color: white;
+            border: none;
+            padding: 0.6rem 1.2rem;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 1rem;
+            margin-right: 0.5rem;
+            margin-bottom: 0.5rem;
+        }
+        button:hover {
+            background-color: #3a5cdd;
+        }
+        .btn-danger {
+            background-color: #dc3545;
+        }
+        .btn-danger:hover {
+            background-color: #bd2130;
+        }
+        .btn-success {
+            background-color: #28a745;
+        }
+        .btn-success:hover {
+            background-color: #218838;
+        }
+        textarea {
+            width: 100%;
+            min-height: 200px;
+            padding: 0.5rem;
+            border-radius: 4px;
+            border: 1px solid #ccc;
+            margin-bottom: 1rem;
+            font-family: monospace;
+        }
+        .hidden {
+            display: none;
+        }
+        pre {
+            background-color: #e9ecef;
+            padding: 1rem;
+            border-radius: 4px;
+            overflow: auto;
+            max-height: 300px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Emergency Data Recovery</h1>
+    
+    <div class="card warning">
+        <h2>⚠️ Application Issue Detected</h2>
+        <p>You're seeing this page because your application encountered an issue. This emergency page allows you to backup and restore your data.</p>
+        <p><strong>Don't worry!</strong> Your data is still in your browser's localStorage and can be recovered.</p>
+    </div>
+    
+    <div class="card">
+        <h2>Backup Your Data</h2>
+        <p>Click the button below to backup all your application data to a file:</p>
+        <button id="exportBtn" class="btn-success">Export All Data</button>
+        <div id="exportResult" class="hidden success"></div>
+    </div>
+    
+    <div class="card">
+        <h2>Restore Your Data</h2>
+        <p>Paste previously exported data below to restore:</p>
+        <textarea id="importData" placeholder="Paste your backup data here..."></textarea>
+        <button id="importBtn">Import Data</button>
+        <div id="importResult" class="hidden success"></div>
+    </div>
+    
+    <div class="card">
+        <h2>View Your Current Data</h2>
+        <p>Click to view your current application data:</p>
+        <button id="viewDataBtn">Show Current Data</button>
+        <pre id="currentData" class="hidden"></pre>
+    </div>
+    
+    <div class="card warning">
+        <h2>Go Back to Application</h2>
+        <p>Try returning to the application after backing up your data:</p>
+        <button id="returnBtn">Return to Application</button>
+    </div>
+    
+    <script>
+        // Export data function
+        document.getElementById('exportBtn').addEventListener('click', function() {
+            try {
+                // Collect all data from localStorage
+                const appData = {};
+                for (let i = 0; i < localStorage.length; i++) {
+                    const key = localStorage.key(i);
+                    if (key) {
+                        appData[key] = localStorage.getItem(key);
+                    }
+                }
+                
+                // Convert to JSON and create downloadable file
+                const dataStr = JSON.stringify(appData, null, 2);
+                const dataBlob = new Blob([dataStr], { type: 'application/json' });
+                const url = URL.createObjectURL(dataBlob);
+                
+                // Generate filename with timestamp
+                const date = new Date();
+                const timestamp = `${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, '0')}-${date.getDate().toString().padStart(2, '0')}`;
+                const filename = `warrior-journal-backup-${timestamp}.json`;
+                
+                // Create download link and trigger click
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = filename;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+                
+                // Show success message
+                const resultEl = document.getElementById('exportResult');
+                resultEl.textContent = `Backup successful! File: ${filename}`;
+                resultEl.classList.remove('hidden');
+            } catch (error) {
+                // Show error message
+                const resultEl = document.getElementById('exportResult');
+                resultEl.textContent = `Error exporting data: ${error.message}`;
+                resultEl.classList.remove('hidden');
+                resultEl.classList.add('warning');
+            }
+        });
+        
+        // Import data function
+        document.getElementById('importBtn').addEventListener('click', function() {
+            try {
+                const importText = document.getElementById('importData').value;
+                if (!importText.trim()) {
+                    throw new Error("Please paste backup data first");
+                }
+                
+                const importedData = JSON.parse(importText);
+                
+                // Store imported data in localStorage
+                Object.entries(importedData).forEach(([key, value]) => {
+                    if (value !== null && value !== undefined) {
+                        localStorage.setItem(key, value.toString());
+                    }
+                });
+                
+                // Show success message
+                const resultEl = document.getElementById('importResult');
+                resultEl.textContent = "Data restored successfully!";
+                resultEl.classList.remove('hidden');
+            } catch (error) {
+                // Show error message
+                const resultEl = document.getElementById('importResult');
+                resultEl.textContent = `Error importing data: ${error.message}`;
+                resultEl.classList.remove('hidden');
+                resultEl.classList.add('warning');
+            }
+        });
+        
+        // View current data
+        document.getElementById('viewDataBtn').addEventListener('click', function() {
+            try {
+                const data = {};
+                for (let i = 0; i < localStorage.length; i++) {
+                    const key = localStorage.key(i);
+                    if (key) {
+                        data[key] = localStorage.getItem(key);
+                    }
+                }
+                
+                const dataEl = document.getElementById('currentData');
+                dataEl.textContent = JSON.stringify(data, null, 2);
+                dataEl.classList.remove('hidden');
+            } catch (error) {
+                const dataEl = document.getElementById('currentData');
+                dataEl.textContent = `Error fetching data: ${error.message}`;
+                dataEl.classList.remove('hidden');
+            }
+        });
+        
+        // Return to application
+        document.getElementById('returnBtn').addEventListener('click', function() {
+            window.location.href = '/';
+        });
+    </script>
+</body>
+</html> 

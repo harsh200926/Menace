@@ -1,0 +1,181 @@
+/* Base dock container */
+.dock-container {
+  position: fixed;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 50;
+  padding: 0.5rem;
+}
+
+/* Dock positions */
+.dock-bottom {
+  width: 100%;
+  height: auto;
+  padding-bottom: 8px;
+}
+
+.dock-top {
+  width: 100%;
+  height: auto;
+  padding-top: 8px;
+}
+
+.dock-left {
+  width: auto;
+  height: 100%;
+  padding-left: 8px;
+}
+
+.dock-right {
+  width: auto;
+  height: 100%;
+  padding-right: 8px;
+}
+
+/* Main dock styles */
+.macos-dock {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 1rem;
+  padding: 0.5rem;
+  transition: all 0.3s ease;
+  gap: 0.5rem;
+  position: relative;
+}
+
+.macos-dock.vertical {
+  flex-direction: column;
+}
+
+/* Dock icon container */
+.dock-item {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: all 0.2s;
+  cursor: pointer;
+  will-change: transform;
+  border-radius: 10px;
+}
+
+/* Make dock icons grow on hover */
+.macos-dock:not(.vertical) .dock-item:hover {
+  transform: scale(1.15) translateY(-10px);
+}
+
+.macos-dock.vertical .dock-item:hover {
+  transform: scale(1.15) translateX(-10px);
+}
+
+/* Icon label */
+.dock-item-label {
+  position: absolute;
+  top: -40px;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: rgba(var(--background-rgb), 0.8);
+  color: var(--foreground);
+  padding: 4px 8px;
+  border-radius: 6px;
+  font-size: 12px;
+  opacity: 0;
+  transition: opacity 0.3s;
+  pointer-events: none;
+  white-space: nowrap;
+  backdrop-filter: blur(8px);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  border: 1px solid rgba(var(--border-rgb), 0.1);
+  z-index: 50;
+}
+
+.macos-dock.vertical .dock-item-label {
+  top: 50%;
+  left: 100%;
+  transform: translateY(-50%);
+  margin-left: 8px;
+}
+
+.dock-item:hover .dock-item-label {
+  opacity: 1;
+}
+
+/* Icon itself */
+.dock-item-icon {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+}
+
+/* Optional reflection effect for bottom dock */
+.dock-reflection {
+  position: absolute;
+  bottom: -10px;
+  left: 0;
+  right: 0;
+  height: 15px;
+  background: linear-gradient(to bottom, rgba(255, 255, 255, 0.2), transparent);
+  filter: blur(5px);
+  border-radius: 50%;
+}
+
+/* Active item indicator */
+.dock-item.active {
+  box-shadow: 0 0 0 2px var(--primary), 0 0 10px rgba(var(--primary-rgb), 0.4);
+}
+
+/* Dock trigger area (optional for auto-show/hide) */
+.dock-trigger {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 5px;
+  cursor: default;
+}
+
+.dock-left .dock-trigger,
+.dock-right .dock-trigger {
+  top: 0;
+  bottom: 0;
+  height: auto;
+  width: 5px;
+  right: auto;
+}
+
+.dock-right .dock-trigger {
+  left: auto;
+  right: 0;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .macos-dock {
+    padding: 2px;
+  }
+  
+  .dock-item {
+    margin: 2px;
+  }
+}
+
+/* Add animations */
+@keyframes float {
+  0% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-5px);
+  }
+  100% {
+    transform: translateY(0px);
+  }
+}
+
+.dock-item.active .dock-item-icon {
+  animation: float 4s ease-in-out infinite;
+}

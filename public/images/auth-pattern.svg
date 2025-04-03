@@ -1,0 +1,78 @@
+<svg width="800" height="800" viewBox="0 0 800 800" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <pattern id="grid" width="100" height="100" patternUnits="userSpaceOnUse">
+      <rect width="100" height="100" fill="none"/>
+      <circle cx="50" cy="50" r="1.5" fill="currentColor" />
+    </pattern>
+    
+    <!-- Geometric elements -->
+    <path id="hexagon" d="M30 0L60 17.32V52.68L30 70L0 52.68V17.32L30 0Z" />
+    <path id="triangle" d="M0 0L30 50L60 0L0 0Z" />
+    <path id="square" d="M0 0H40V40H0V0Z" />
+    <path id="circle" d="M25 0C38.8071 0 50 11.1929 50 25C50 38.8071 38.8071 50 25 50C11.1929 50 0 38.8071 0 25C0 11.1929 11.1929 0 25 0Z" />
+  </defs>
+  
+  <!-- Background pattern -->
+  <rect width="800" height="800" fill="url(#grid)" />
+  
+  <!-- Scattered geometric shapes -->
+  <!-- Row 1 -->
+  <g opacity="0.6">
+    <use href="#hexagon" x="100" y="50" transform="rotate(15)" />
+    <use href="#triangle" x="250" y="120" transform="rotate(45)" />
+    <use href="#square" x="400" y="80" transform="rotate(30)" />
+    <use href="#circle" x="600" y="100" />
+  </g>
+  
+  <!-- Row 2 -->
+  <g opacity="0.4">
+    <use href="#square" x="50" y="200" transform="rotate(10)" />
+    <use href="#circle" x="200" y="250" />
+    <use href="#hexagon" x="380" y="220" transform="rotate(60)" />
+    <use href="#triangle" x="550" y="240" transform="rotate(-15)" />
+    <use href="#square" x="700" y="200" transform="rotate(20)" />
+  </g>
+  
+  <!-- Row 3 -->
+  <g opacity="0.3">
+    <use href="#triangle" x="120" y="350" transform="rotate(90)" />
+    <use href="#hexagon" x="280" y="380" transform="rotate(30)" />
+    <use href="#circle" x="450" y="350" />
+    <use href="#square" x="600" y="380" transform="rotate(45)" />
+  </g>
+  
+  <!-- Row 4 -->
+  <g opacity="0.5">
+    <use href="#circle" x="70" y="500" />
+    <use href="#square" x="220" y="480" transform="rotate(15)" />
+    <use href="#triangle" x="380" y="520" transform="rotate(60)" />
+    <use href="#hexagon" x="550" y="480" transform="rotate(10)" />
+    <use href="#circle" x="700" y="520" />
+  </g>
+  
+  <!-- Row 5 -->
+  <g opacity="0.4">
+    <use href="#hexagon" x="100" y="650" transform="rotate(45)" />
+    <use href="#triangle" x="250" y="600" transform="rotate(30)" />
+    <use href="#square" x="420" y="620" transform="rotate(-15)" />
+    <use href="#circle" x="600" y="650" />
+    <use href="#triangle" x="750" y="620" transform="rotate(75)" />
+  </g>
+  
+  <!-- Additional decorative lines -->
+  <g opacity="0.2" stroke="currentColor" stroke-width="1">
+    <line x1="0" y1="200" x2="800" y2="200" />
+    <line x1="0" y1="400" x2="800" y2="400" />
+    <line x1="0" y1="600" x2="800" y2="600" />
+    
+    <line x1="200" y1="0" x2="200" y2="800" />
+    <line x1="400" y1="0" x2="400" y2="800" />
+    <line x1="600" y1="0" x2="600" y2="800" />
+  </g>
+  
+  <!-- Diagonal lines -->
+  <g opacity="0.15" stroke="currentColor" stroke-width="1">
+    <line x1="0" y1="0" x2="800" y2="800" />
+    <line x1="800" y1="0" x2="0" y2="800" />
+  </g>
+</svg> 
