@@ -1,4 +1,4 @@
-import { useState, useEffect, ReactNode } from "react";
+import { useState, useEffect, ReactNode, useRef } from "react";
 import { useNavigate, useLocation, Link } from "react-router-dom";
 import { 
   LayoutDashboard, 
@@ -6,8 +6,8 @@ import {
   BookText, 
   FileText, 
   Target, 
-  LineChart,
-  Settings,
+  LineChart, 
+  Settings, 
   History,
   HeartPulse,
   ImageDown,
@@ -28,7 +28,7 @@ import {
   Sun,
   Palette,
   Scroll,
-  Crown
+  Crown,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useTheme } from "@/context/ThemeContext";
@@ -36,20 +36,15 @@ import { useAuth } from "@/context/AuthContext";
 import { getHistory } from "@/utils/historyUtils";
 import { Badge } from "@/components/ui/badge";
 import { ProfileSection } from "@/components/Sidebar/ProfileSection";
-import { format } from "date-fns";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { 
-  DropdownMenu,
-  DropdownMenuContent, 
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+  
+} from "@/components/ui/dropdown-menu"
 
 const warriorQuotes = [
   "Winter is coming.",
   "The man who passes the sentence should swing the sword.",
-  "When the snows fall and the white winds blow, the lone wolf survives but the pack dies.",
   "I am the sword in the darkness.",
   "The night is dark and full of terrors.",
   "A man can only be brave when he is afraid.",
@@ -103,16 +98,15 @@ interface NavItemProps {
 
 const NavItem = ({ item, isActive, collapsed, hoveredItem, setHoveredItem }: NavItemProps) => {
   const navigate = useNavigate();
-  
+
   return (
     <motion.div
       className="relative"
+      key={item.id}
       onMouseEnter={() => setHoveredItem(item.id)}
       onMouseLeave={() => setHoveredItem(null)}
       whileHover={{ x: collapsed ? 0 : 5 }}
-      initial={{ opacity: 0, x: -20 }}
-      animate={{ opacity: 1, x: 0 }}
-      transition={{ duration: 0.3 }}
+      transition={{ duration: 0.2 }}
     >
       <a 
         href={item.path}
@@ -122,18 +116,17 @@ const NavItem = ({ item, isActive, collapsed, hoveredItem, setHoveredItem }: Nav
         }}
         className={cn(
           "flex items-center rounded-lg px-3 py-2.5 text-sm font-medium",
-          "transition-all duration-200 ease-in-out",
           "hover:bg-primary/10 hover:shadow-inner-glow",
           "focus:outline-none focus-visible:ring-2 focus-visible:ring-primary",
           isActive 
             ? "bg-primary/15 text-foreground shadow-inner-glow" 
             : "text-muted-foreground hover:text-foreground"
+            
         )}
-      >
-        <motion.div
+        >
+         <motion.div
           initial={{ scale: 1 }}
-          animate={{ 
-            scale: hoveredItem === item.id || isActive ? 1.15 : 1,
+          animate={{ scale: hoveredItem === item.id || isActive ? 1.15 : 1,
             rotate: hoveredItem === item.id || isActive ? 5 : 0
           }}
           transition={{ duration: 0.2 }}
@@ -141,23 +134,17 @@ const NavItem = ({ item, isActive, collapsed, hoveredItem, setHoveredItem }: Nav
             "flex-shrink-0 mr-2",
             collapsed && "mr-0",
             isActive && "text-primary drop-shadow-glow"
-          )}
-        >
+          )}>
+
           {item.icon}
         </motion.div>
-        
         {!collapsed && (
-          <motion.span 
-            className="flex-1 truncate"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.2 }}
-          >
+          <motion.span className="flex-1 truncate">
             {item.label}
           </motion.span>
         )}
-        
+
+
         {!collapsed && item.count !== null && (
           <Badge 
             variant="default" 
@@ -169,7 +156,7 @@ const NavItem = ({ item, isActive, collapsed, hoveredItem, setHoveredItem }: Nav
           >
             {item.count}
           </Badge>
-        )}
+          )}
       </a>
       
       {isActive && (
@@ -179,7 +166,7 @@ const NavItem = ({ item, isActive, collapsed, hoveredItem, setHoveredItem }: Nav
           transition={{ type: "spring", stiffness: 300, damping: 30 }}
         />
       )}
-    </motion.div>
+      </motion.div>
   );
 };
 
@@ -204,9 +191,9 @@ const Sidebar = ({ collapsed = false, onToggleCollapse }: SidebarProps) => {
   const [currentQuote, setCurrentQuote] = useState("");
   const [hoveredItem, setHoveredItem] = useState<string | null>(null);
 
-  // Close mobile nav when location changes
+    // Close mobile nav when location changes
   useEffect(() => {
-    setIsMobileNavOpen(false);
+      setIsMobileNavOpen(false);
   }, [location]);
 
   // Update quote periodically
@@ -223,7 +210,7 @@ const Sidebar = ({ collapsed = false, onToggleCollapse }: SidebarProps) => {
   }, []);
 
   useEffect(() => {
-    // Count today's activity for badges
+      // Count today's activity for badges
     const history = getHistory();
     const today = new Date().toISOString().split('T')[0];
     
@@ -233,12 +220,12 @@ const Sidebar = ({ collapsed = false, onToggleCollapse }: SidebarProps) => {
     });
     
     setTodayActivityCount(todayHistory.length);
-    
-    // Count pending goals
-    const goalsData = localStorage.getItem('goals');
-    if (goalsData) {
-      const goals = JSON.parse(goalsData) as Goal[];
-      const pendingGoals = goals.filter((goal) => {
+
+      // Count pending goals
+      const goalsData = localStorage.getItem('goals');
+      if (goalsData) {
+        const goals = JSON.parse(goalsData) as Goal[];
+        const pendingGoals = goals.filter((goal) => {
         return goal.status === 'active' && goal.progress < goal.target;
       });
       setPendingGoalsCount(pendingGoals.length);
@@ -286,8 +273,7 @@ const Sidebar = ({ collapsed = false, onToggleCollapse }: SidebarProps) => {
   const authItems = currentUser 
     ? [
         { id: 'profile', icon: <UserCircle size={20} />, label: "Profile", path: "/profile", count: null },
-      ]
-    : [
+      ] : [
         { id: 'login', icon: <LogIn size={20} />, label: "Log In", path: "/login", count: null },
         { id: 'signup', icon: <UserPlus size={20} />, label: "Sign Up", path: "/signup", count: null },
       ];
@@ -295,13 +281,13 @@ const Sidebar = ({ collapsed = false, onToggleCollapse }: SidebarProps) => {
   const sidebarVariants = {
     expanded: { 
       width: "272px", // Slightly wider to account for border and shadow
-      transition: { duration: 0.3, ease: "easeInOut" }
+      transition: { duration: 0.3, ease: "easeInOut" },
     },
     collapsed: { 
       width: "64px", // Slightly wider to account for border and shadow
-      transition: { duration: 0.3, ease: "easeInOut" }
-    }
-  };
+      transition: { duration: 0.3, ease: "easeInOut" },
+    },
+};
 
   // Mobile nav overlay variants
   const overlayVariants = {
@@ -315,15 +301,11 @@ const Sidebar = ({ collapsed = false, onToggleCollapse }: SidebarProps) => {
     visible: { x: 0 }
   };
 
-  // Color schemes - include all available accent colors from ThemeContext
   const colorSchemes = [
-    { name: "blue", label: "Blue" },
-    { name: "purple", label: "Purple" },
-    { name: "pink", label: "Pink" },
-    { name: "red", label: "Red" },
-    { name: "orange", label: "Orange" },
-    { name: "amber", label: "Amber" },
-    { name: "yellow", label: "Yellow" },
+        { name: "blue", label: "Blue" },
+        { name: "purple", label: "Purple" },
+        { name: "pink", label: "Pink" },
+        { name: "red", label: "Red" },
     { name: "lime", label: "Lime" },
     { name: "green", label: "Green" },
     { name: "emerald", label: "Emerald" },
@@ -359,16 +341,20 @@ const Sidebar = ({ collapsed = false, onToggleCollapse }: SidebarProps) => {
   return (
     <>
       {/* Mobile hamburger button */}
-      <button 
-        className="lg:hidden fixed top-4 left-4 z-50 bg-background/80 backdrop-blur-sm p-2 rounded-md border border-border/50"
-        onClick={() => setIsMobileNavOpen(true)}
-      >
-        <Menu size={20} />
-      </button>
-      
+      <motion.button 
+          className="lg:hidden fixed top-4 left-4 z-50 bg-background/80 backdrop-blur-sm p-2 rounded-md border border-border/50"
+          onClick={() => setIsMobileNavOpen(!isMobileNavOpen)}
+          whileHover={{ scale: 1.1 }}
+          whileTap={{ scale: 0.95 }}
+          >
+          <AnimatePresence mode="wait" >
+              {isMobileNavOpen ? <X size={20} key="x" className="transition-all duration-300" /> : <Menu size={20} key="menu" className="transition-all duration-300" />}
+          </AnimatePresence>
+      </motion.button>
+
       {/* Desktop sidebar */}
       <motion.div 
-        className={cn(
+          className={cn(
           "fixed left-0 top-0 h-screen",
           "hidden lg:flex",
           "bg-background/95 backdrop-blur-sm",
@@ -388,9 +374,8 @@ const Sidebar = ({ collapsed = false, onToggleCollapse }: SidebarProps) => {
           <div className="absolute inset-0 pointer-events-none">
             <div className="absolute top-0 left-0 right-0 h-32 bg-gradient-to-b from-primary/5 to-transparent"></div>
             <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-primary/5 to-transparent"></div>
-          </div>
+            </div>
 
-          {/* Enhanced Header */}
           <div className="relative mb-4">
             <div className="absolute inset-0 bg-gradient-to-r from-primary/5 via-primary/10 to-primary/5"></div>
             <div className="absolute inset-x-0 bottom-0 h-px bg-gradient-to-r from-transparent via-primary/20 to-transparent"></div>
@@ -398,8 +383,8 @@ const Sidebar = ({ collapsed = false, onToggleCollapse }: SidebarProps) => {
             <div className="relative flex items-center justify-between p-4">
               <AnimatePresence mode="wait">
                 {!collapsed ? (
-                  <motion.div 
-                    className="flex items-center gap-3"
+                    <motion.div
+                    className="flex items-center gap-3" 
                     initial={{ opacity: 0, x: -20 }}
                     animate={{ opacity: 1, x: 0 }}
                     exit={{ opacity: 0, x: -20 }}
@@ -435,16 +420,15 @@ const Sidebar = ({ collapsed = false, onToggleCollapse }: SidebarProps) => {
                   </motion.div>
                 )}
               </AnimatePresence>
-              
-              <motion.button 
-                onClick={onToggleCollapse}
-                className={cn(
-                  "p-1.5 rounded-full",
-                  "hover:bg-primary/10 hover:shadow-inner-glow",
-                  "focus:outline-none focus-visible:ring-2 focus-visible:ring-primary",
-                  "transition-all duration-200"
-                )}
-                whileHover={{ scale: 1.1 }}
+              <motion.button
+                  onClick={onToggleCollapse}
+                  className={cn(
+                      "p-1.5 rounded-full",
+                      "hover:bg-primary/10 hover:shadow-inner-glow",
+                      "focus:outline-none focus-visible:ring-2 focus-visible:ring-primary",
+                      "transition-all duration-200"
+                  )}
+                whileHover={{ scale: 1.1 }}                
                 whileTap={{ scale: 0.95 }}
               >
                 {collapsed ? <ChevronRight size={16} /> : <ChevronLeft size={16} />}
@@ -452,17 +436,13 @@ const Sidebar = ({ collapsed = false, onToggleCollapse }: SidebarProps) => {
             </div>
           </div>
           
-          {/* Navigation Section */}
-          <div className={cn(
-            "flex-1 px-3 overflow-y-auto",
-            "scrollbar-thin scrollbar-thumb-primary/10 scrollbar-track-transparent",
-            "hover:scrollbar-thumb-primary/20"
-          )}>
-            {/* Navigation Items */}
-            <div className="space-y-1">
-              {navItems.map((item) => (
-                <NavItem
-                  key={item.id}
+            {/* Navigation Section */} 
+            <div className={cn("flex-1 px-3 overflow-y-auto","scrollbar-thin scrollbar-thumb-primary/10 scrollbar-track-transparent","hover:scrollbar-thumb-primary/20")}>
+            
+                {/* Navigation Items */}
+                <div className="space-y-1">
+                {navItems.map((item) => (
+                  <NavItem
                   item={item}
                   isActive={location.pathname === item.path}
                   collapsed={collapsed}
@@ -470,8 +450,8 @@ const Sidebar = ({ collapsed = false, onToggleCollapse }: SidebarProps) => {
                   setHoveredItem={setHoveredItem}
                 />
               ))}
-            </div>
-
+                </div>
+                
             {/* Decorative Divider */}
             <div className="relative my-3">
               <div className="absolute inset-0 flex items-center">
@@ -487,15 +467,10 @@ const Sidebar = ({ collapsed = false, onToggleCollapse }: SidebarProps) => {
             {/* Quote Section */}
             {!collapsed && (
               <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
                 className="px-3 py-3 rounded-lg bg-primary/5 border border-primary/10"
               >
                 <Quote className="h-4 w-4 text-primary/40 mb-2" />
-                <p className="text-xs italic text-muted-foreground">
-                  {currentQuote}
-                </p>
+                <p className="text-xs italic text-muted-foreground">{currentQuote}</p>
               </motion.div>
             )}
           </div>
@@ -512,15 +487,15 @@ const Sidebar = ({ collapsed = false, onToggleCollapse }: SidebarProps) => {
 
       {/* Mobile navigation overlay */}
       <AnimatePresence>
-        {isMobileNavOpen && (
-          <motion.div 
-            className="fixed inset-0 bg-black/50 z-50 lg:hidden"
+          {isMobileNavOpen && (
+              <motion.div 
+              className="fixed inset-0 bg-black/50 z-50 lg:hidden"
             initial="hidden"
-            animate="visible"
+            animate="visible" 
             exit="hidden"
             variants={overlayVariants}
             onClick={() => setIsMobileNavOpen(false)}
-          >
+          >            
             <motion.div 
               className="absolute top-0 left-0 bottom-0 w-[85%] max-w-[300px] bg-sidebar p-4"
               initial="hidden"
@@ -531,34 +506,31 @@ const Sidebar = ({ collapsed = false, onToggleCollapse }: SidebarProps) => {
               onClick={(e) => e.stopPropagation()}
             >
               <div className="flex justify-between items-center mb-6">
-                <div className="flex items-center">
+                  <div className="flex items-center">
                   <Sword size={22} className="mr-2 text-primary" />
                   <span className="text-sm font-medium">MENACE</span>
-                </div>
-                <button 
-                  className="p-1 rounded-full hover:bg-primary/10"
-                  onClick={() => setIsMobileNavOpen(false)}
-                >
+                  </div>              
+                  <button 
+                      className="p-1 rounded-full hover:bg-primary/10"
+                      onClick={() => setIsMobileNavOpen(false)}
+                  >
                   <X size={18} />
                 </button>
               </div>
               
               <div className="space-y-1">
-                {navItems.map((item) => {
-                  const isActive = location.pathname === item.path;
-                  return (
-                    <NavItem
-                      key={item.id}
-                      item={item}
-                      isActive={isActive}
-                      collapsed={false}
-                      hoveredItem={hoveredItem}
-                      setHoveredItem={setHoveredItem}
-                    />
-                  );
-                })}
+                {navItems.map((item) => (
+                  <NavItem
+                    key={item.id}
+                    item={item}
+                    isActive={location.pathname === item.path}
+                    collapsed={false}
+                    hoveredItem={hoveredItem}
+                    setHoveredItem={setHoveredItem}
+                  />
+                ))}
               </div>
-              
+
               <div className="mt-6">
                 <div className="rounded-lg border bg-card/30 border-border/60 p-3">
                   <div className="flex items-center gap-2 text-sm font-medium mb-2">
@@ -567,7 +539,7 @@ const Sidebar = ({ collapsed = false, onToggleCollapse }: SidebarProps) => {
                   </div>
                   <p className="text-xs italic opacity-90">"{currentQuote}"</p>
                 </div>
-              </div>
+              </div>                
               
               <div className="absolute bottom-0 left-0 right-0 p-4">
                 <ProfileSection collapsed={false} />
@@ -587,37 +559,37 @@ const Sidebar = ({ collapsed = false, onToggleCollapse }: SidebarProps) => {
             </motion.div>
           </motion.div>
         )}
-      </AnimatePresence>
+        </AnimatePresence>
 
       {/* Collapsed tooltips */}
-      {collapsed && (
-        <>
-          {navItems.map((item) => (
-            <div
-              key={`tooltip-${item.id}`}
-              className={cn(
-                "fixed left-16 ml-1 px-2 py-1",
-                "rounded bg-background/90 backdrop-blur-md",
-                "border border-border/50 text-foreground text-xs",
-                "transition-opacity duration-200 pointer-events-none",
-                "z-50 shadow-lg whitespace-nowrap",
-                hoveredItem === item.id ? "opacity-100" : "opacity-0"
-              )}
-              style={{
-                top: document.querySelector(`[href="${item.path}"]`)?.getBoundingClientRect().top,
-                transform: 'translateY(-50%)',
-              }}
-            >
-              {item.label}
-              {item.count !== null && (
-                <span className="ml-1 px-1 py-0.5 rounded text-[10px] bg-primary/10">
-                  {item.count}
-                </span>
-              )}
-            </div>
-          ))}
-        </>
-      )}
+        {collapsed && (
+          <>
+              {navItems.map((item) => (
+                <div
+                  key={`tooltip-${item.id}`}
+                  className={cn(
+                    "fixed left-16 ml-1 px-2 py-1",
+                    "rounded bg-background/80 backdrop-blur-sm",
+                    "border border-border/50 text-foreground text-xs",
+                    "transition-opacity duration-200 pointer-events-none",
+                    "z-50 shadow-lg whitespace-nowrap",
+                    hoveredItem === item.id ? "opacity-100" : "opacity-0"
+                  )}
+                  style={{
+                    top: document.querySelector(`[href="${item.path}"]`)?.getBoundingClientRect().top,
+                    transform: 'translateY(-50%)',
+                  }}
+                >
+                  {item.label}
+                  {item.count !== null && (
+                    <span className="ml-1 px-1 py-0.5 rounded text-[10px] bg-primary/10">
+                      {item.count}
+                    </span>
+                  )}
+                </div>
+            ))}
+          </>
+        )}
     </>
   );
 };

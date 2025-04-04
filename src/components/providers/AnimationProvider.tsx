@@ -1,6 +1,6 @@
 import { ReactNode, useEffect, Suspense } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
-import Lenis from '@studio-freight/lenis';
+import Lenis from 'lenis';
 import { useLocation } from 'react-router-dom';
 
 interface AnimationProviderProps {
@@ -37,7 +37,6 @@ export function AnimationProvider({ children }: AnimationProviderProps) {
       gestureOrientation: 'vertical',
       smoothWheel: true,
       wheelMultiplier: 1,
-      smoothTouch: false,
       touchMultiplier: 2,
       infinite: false,
     });

@@ -1,4 +1,4 @@
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { CardContent } from "@/components/ui/card";
 import { 
   CheckCircle2, 
   CalendarClock, 
@@ -183,15 +183,12 @@ export function SummaryWidget() {
   };
   
   return (
-    <Card className="overflow-hidden">
-      <CardHeader className="bg-primary/5 pb-4">
-        <CardTitle className="flex items-center gap-2">
-          <TrendingUp className="h-5 w-5 text-primary" />
-          Dashboard Summary
-        </CardTitle>
-        <CardDescription>Track your progress across all features</CardDescription>
-      </CardHeader>
-      
+    <div className="overflow-hidden">
+      <div className="mb-4 flex items-center gap-2">
+        <TrendingUp className="h-5 w-5 text-primary" />
+        <h3 className="text-lg font-medium">Daily Summary</h3>
+      </div>
+
       <CardContent className="p-4">
         {/* Productivity score */}
         <div className="mb-6">
@@ -342,6 +339,6 @@ export function SummaryWidget() {
           </motion.div>
         </div>
       </CardContent>
-    </Card>
+    </div>
   );
 } 
