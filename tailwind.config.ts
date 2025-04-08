@@ -1,4 +1,5 @@
 import type { Config } from "tailwindcss";
+import { fontFamily } from "tailwindcss/defaultTheme";
 
 export default {
 	darkMode: ["class"],
@@ -145,7 +146,7 @@ export default {
 				'inner-glow': 'inset 0 0 15px rgba(var(--primary-rgb), 0.2)'
 			},
 			fontFamily: {
-				'trajan': ['Trajan Pro', 'serif'],
+				sans: ["Poppins", ...fontFamily.sans],
 			},
 		}
 	},

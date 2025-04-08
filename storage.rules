@@ -1,3 +1,13 @@
+/*
+ * Firebase Storage Rules
+ * 
+ * NOTE: We've migrated to Supabase Storage, so these rules are no longer used.
+ * They're kept here for reference only in case we need to revert back.
+ * 
+ * For Supabase Storage security rules, please configure them in the Supabase dashboard:
+ * https://app.supabase.io/project/[your-project-id]/storage
+ */
+
 rules_version = '2';
 
 // Craft rules based on data in your Firestore database
@@ -5,20 +15,9 @@ rules_version = '2';
 //    /databases/(default)/documents/users/$(request.auth.uid)).data.isAdmin;
 service firebase.storage {
   match /b/{bucket}/o {
-    // Allow authenticated users to read, write and delete their own files
-    match /memories/{userId}/{allPaths=**} {
-      allow read, write, delete: if request.auth != null && request.auth.uid == userId;
-    }
-    
-    // Allow authenticated users to read, write and delete their own music files
-    match /music/{userId}/{allPaths=**} {
-      allow read, write, delete: if request.auth != null && request.auth.uid == userId;
-    }
-    
-    // Allow public read access to certain directories (if needed)
-    match /public/{allPaths=**} {
-      allow read: if true;  // Anyone can read public files
-      allow write, delete: if request.auth != null; // Only authenticated users can modify
+    // Default deny all
+    match /{allPaths=**} {
+      allow read, write: if false;
     }
   }
 }
